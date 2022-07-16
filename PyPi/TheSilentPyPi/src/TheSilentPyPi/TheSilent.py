@@ -42,9 +42,12 @@ def link_scanner(url):
     result_list = []
     web_list = []
 
+    clear()
+
     user_input = input("1 = search domain links | 2 = search all links | 3 = search for a specific link\n")
 
     if user_input == "3":
+        clear()
         specific_link = input("enter specific link: ")
 
 
@@ -249,6 +252,8 @@ def link_scanner(url):
     
     result_list.sort()
 
+    clear()
+
     if user_input == "1" or user_input == "2":
         return total_web_list
 
@@ -304,6 +309,8 @@ def link_scanner_selenium(url):
     total_web_list = list(dict.fromkeys(total_web_list))
     total_web_list.sort()
 
+    clear()
+
     return total_web_list
 
 def source_code_viewer(file, keyword):
@@ -351,7 +358,10 @@ def sql_injection_scanner(url):
 
     my_list = []
 
+    clear()
+
     user_input = input("1 = scan url | 2 = scan url and hyperlinks (requests) | 3 = scan url and hyperlinks (selenium)\n")
+
     clear()
     
     if user_input == "1":
@@ -941,7 +951,7 @@ def sql_injection_scanner(url):
                 continue
 
     if user_input == "3":
-        my_result = link_scanner_selenium.link_scanner_selenium(url)
+        my_result = link_scanner_selenium(url)
 
         for j in my_result:
             for c in mal_sql:
@@ -1238,5 +1248,962 @@ def sql_injection_scanner(url):
             except requests.exceptions.ReadTimeout:
                 print("ERROR: read timeout!")
                 continue
+
+    clear()
     
+    return my_list
+
+def xss_scanner(url):
+    my_list = []
+    my_url = "http://" + url
+    
+    #malicious script
+    mal_script = "<script>alert('The Silent')</script>"
+
+    clear()
+
+    user_input = input("1 = scan url | 2 = scan url and hyperlinks (requests) | 3 = scan url and hyperlinks (selenium)\n")
+
+    clear()
+
+    if user_input == "1":
+        try:
+            super_result = my_url.split("=")
+            print("checking: " + super_result[0] + "=" + mal_script)
+            result = web_session.get(super_result[0] + "=" + mal_script, verify = True, headers = user_agent, timeout = (5, 30))
+
+            if mal_script in result.text:
+                print("True: " + super_result[0] + "=" + mal_script + " (script in url)")
+                my_list.append(super_result[0] + "=" + mal_script + " (script in url)")
+
+        except requests.exceptions.SSLError:
+            print("ERROR: invalid certificate!")
+            pass
+
+        except urllib3.exceptions.LocationParseError:
+            print("ERROR: location parse error!")
+            pass
+
+        except requests.exceptions.ConnectionError:
+            print("ERROR: connection error!")
+            pass
+
+        except requests.exceptions.ConnectTimeout:
+            print("ERROR: connect timeout!")
+            pass
+
+        except requests.exceptions.InvalidSchema:
+            print("ERROR: invalid schema!")
+            pass
+
+        except requests.exceptions.InvalidURL:
+            print("ERROR: invalid url!")
+            pass
+
+        except requests.exceptions.MissingSchema:
+            print("ERROR: missing schema!")
+            pass
+
+        except requests.exceptions.TooManyRedirects:
+            print("ERROR: too many redirects!")
+            pass
+
+        except requests.exceptions.ReadTimeout:
+            print("ERROR: read timeout!")
+            pass
+
+        except UnicodeError:
+            pass
+        
+        try:
+            print("checking: " + my_url + mal_script)
+            result = web_session.get(my_url + mal_script, verify = True, headers = user_agent, timeout = (5, 30))
+
+            if mal_script in result.text:
+                print("True: " + my_url + mal_script + " (script in url)")
+                my_list.append(my_url + mal_script + " (script in url)")
+
+        except requests.exceptions.SSLError:
+            print("ERROR: invalid certificate!")
+            pass
+
+        except urllib3.exceptions.LocationParseError:
+            print("ERROR: location parse error!")
+            pass
+
+        except requests.exceptions.ConnectionError:
+            print("ERROR: connection error!")
+            pass
+
+        except requests.exceptions.ConnectTimeout:
+            print("ERROR: connect timeout!")
+            pass
+
+        except requests.exceptions.InvalidSchema:
+            print("ERROR: invalid schema!")
+            pass
+
+        except requests.exceptions.InvalidURL:
+            print("ERROR: invalid url!")
+            pass
+
+        except requests.exceptions.MissingSchema:
+            print("ERROR: missing schema!")
+            pass
+
+        except requests.exceptions.TooManyRedirects:
+            print("ERROR: too many redirects!")
+            pass
+
+        except requests.exceptions.ReadTimeout:
+            print("ERROR: read timeout!")
+            pass
+
+        except UnicodeError:
+            pass
+
+        try:
+            print("Checking for forms on: " + my_url)
+            
+            result = web_session.get(my_url, verify = True, headers = user_agent, timeout = (5, 30))
+
+            try:
+                soup = BeautifulSoup(result.text, "html.parser")
+                get_input = soup.find_all("input")
+
+            except:
+                pass
+
+            form_list = []
+
+            for i in get_input:
+                if "email" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                        
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+
+                if "hidden" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+                    
+                if "number" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+
+                if "password" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+
+                if "query" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                        
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+
+                if "search" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+
+                if "tel" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                        
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+
+                if "text" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                        
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+
+                if "url" in str(i):
+                    form_name = ""
+
+                    try:
+                        parse_name_start = str(i).index("name=\"")
+                        parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                        
+                        for ii in range(parse_name_start + 6, parse_name_end):
+                            form_name = form_name + str(i)[ii]
+
+                        form_list.append(form_name)
+
+                    except:
+                        pass
+
+                form_list = list(dict.fromkeys(form_list))
+                form_list.sort()
+
+                for forms in form_list:
+                    print("checking form: " + forms)
+                    mal_dict = {forms: mal_script}
+
+                    get_data = web_session.get(my_url, params = mal_dict, verify = True, headers = user_agent, timeout = (5, 30))
+                    send_data = web_session.post(my_url, data = mal_dict, verify = True, headers = user_agent, timeout = (5, 30))
+
+                    if mal_script in send_data.text or mal_script in get_data.text:
+                        print("true: " + url + " form: " + forms)
+                        my_list.append(url + " form: " + forms)
+
+        except requests.exceptions.SSLError:
+            print("ERROR: invalid certificate!")
+            pass
+
+        except urllib3.exceptions.LocationParseError:
+            print("ERROR: location parse error!")
+            pass
+
+        except requests.exceptions.ConnectionError:
+            print("ERROR: connection error!")
+            pass
+
+        except requests.exceptions.ConnectTimeout:
+            print("ERROR: connect timeout!")
+            pass
+
+        except requests.exceptions.InvalidSchema:
+            print("ERROR: invalid schema!")
+            pass
+
+        except requests.exceptions.InvalidURL:
+            print("ERROR: invalid url!")
+            pass
+
+        except requests.exceptions.MissingSchema:
+            print("ERROR: missing schema!")
+            pass
+
+        except requests.exceptions.TooManyRedirects:
+            print("ERROR: too many redirects!")
+            pass
+
+        except requests.exceptions.ReadTimeout:
+            print("ERROR: read timeout!")
+            pass
+
+        except UnicodeError:
+            pass
+
+    if user_input == "2":
+        my_result = link_scanner(url) 
+
+        for links in my_result:
+            try:
+                super_result = links.split("=")
+                print("checking: " + super_result[0] + "=" + mal_script)
+                result = web_session.get(super_result[0] + "=" + mal_script, verify = True, headers = user_agent, timeout = (5, 30))
+
+                if mal_script in result.text:
+                    print("True: " + super_result[0] + "=" + mal_script + " (script in url)")
+                    my_list.append(super_result[0] + "=" + mal_script + " (script in url)")
+
+            except requests.exceptions.SSLError:
+                print("ERROR: invalid certificate!")
+                pass
+
+            except urllib3.exceptions.LocationParseError:
+                print("ERROR: location parse error!")
+                pass
+
+            except requests.exceptions.ConnectionError:
+                print("ERROR: connection error!")
+                pass
+
+            except requests.exceptions.ConnectTimeout:
+                print("ERROR: connect timeout!")
+                pass
+
+            except requests.exceptions.InvalidSchema:
+                print("ERROR: invalid schema!")
+                pass
+
+            except requests.exceptions.InvalidURL:
+                print("ERROR: invalid url!")
+                pass
+
+            except requests.exceptions.MissingSchema:
+                print("ERROR: missing schema!")
+                pass
+
+            except requests.exceptions.TooManyRedirects:
+                print("ERROR: too many redirects!")
+                pass
+
+            except requests.exceptions.ReadTimeout:
+                print("ERROR: read timeout!")
+                pass
+
+            except UnicodeError:
+                pass
+                
+            try:
+                print("checking: " + links + mal_script)
+                
+                result = web_session.get(links + mal_script, verify = True, headers = user_agent, timeout = (5, 30))
+
+                if mal_script in result.text:
+                    print("True: " + links  + mal_script + " (script in url)")
+                    my_list.append(links  + mal_script + " (script in url)")
+
+            except requests.exceptions.SSLError:
+                print("ERROR: invalid certificate!")
+                pass
+
+            except urllib3.exceptions.LocationParseError:
+                print("ERROR: location parse error!")
+                pass
+
+            except requests.exceptions.ConnectionError:
+                print("ERROR: connection error!")
+                pass
+
+            except requests.exceptions.ConnectTimeout:
+                print("ERROR: connect timeout!")
+                pass
+
+            except requests.exceptions.InvalidSchema:
+                print("ERROR: invalid schema!")
+                pass
+
+            except requests.exceptions.InvalidURL:
+                print("ERROR: invalid url!")
+                pass
+
+            except requests.exceptions.MissingSchema:
+                print("ERROR: missing schema!")
+                pass
+
+            except requests.exceptions.TooManyRedirects:
+                print("ERROR: too many redirects!")
+                pass
+
+            except requests.exceptions.ReadTimeout:
+                print("ERROR: read timeout!")
+                pass
+
+            except UnicodeError:
+                pass
+
+            try:
+                print("checking for forms on: " + links)
+
+                result = web_session.get(links, verify = True, headers = user_agent, timeout = (5, 30))
+
+                try:
+                    soup = BeautifulSoup(result.text, "html.parser")
+                    get_input = soup.find_all("input")
+
+                except:
+                    pass
+
+                form_list = []
+
+                for i in get_input:
+                    if "email" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "hidden" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+                        
+                    if "number" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "password" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "query" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "search" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "search" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "tel" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "text" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "url" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                form_list = list(dict.fromkeys(form_list))
+                form_list.sort()
+
+                for forms in form_list:
+                    print("checking form: " + forms)
+                    mal_dict = {forms: mal_script}
+
+                    get_data = web_session.get(links, params = mal_dict, verify = True, headers = user_agent, timeout = (5, 30))
+                    send_data = web_session.post(links, data = mal_dict, verify = True, headers = user_agent, timeout = (5, 30))
+
+                    if mal_script in send_data.text or mal_script in get_data.text:
+                        print("true: " + links + " form: " + forms)
+                        my_list.append(links + " form: " + forms)
+
+            except requests.exceptions.SSLError:
+                print("ERROR: invalid certificate!")
+                pass
+
+            except urllib3.exceptions.LocationParseError:
+                print("ERROR: location parse error!")
+                pass
+
+            except requests.exceptions.ConnectionError:
+                print("ERROR: connection error!")
+                pass
+
+            except requests.exceptions.ConnectTimeout:
+                print("ERROR: connect timeout!")
+                pass
+
+            except requests.exceptions.InvalidSchema:
+                print("ERROR: invalid schema!")
+                pass
+
+            except requests.exceptions.InvalidURL:
+                print("ERROR: invalid url!")
+                pass
+
+            except requests.exceptions.MissingSchema:
+                print("ERROR: missing schema!")
+                pass
+
+            except requests.exceptions.TooManyRedirects:
+                print("ERROR: too many redirects!")
+                pass
+
+            except requests.exceptions.ReadTimeout:
+                print("ERROR: read timeout!")
+                pass
+
+            except UnicodeError:
+                pass
+
+    if user_input == "3":
+        my_result = link_scanner_selenium(url) 
+
+        for links in my_result:
+            try:
+                super_result = links.split("=")
+                print("checking: " + super_result[0] + "=" + mal_script)
+                result = web_session.get(super_result[0] + "=" + mal_script, verify = True, headers = user_agent, timeout = (5, 30))
+
+                if mal_script in result.text:
+                    print("True: " + super_result[0] + "=" + mal_script + " (script in url)")
+                    my_list.append(super_result[0] + "=" + mal_script + " (script in url)")
+
+            except requests.exceptions.SSLError:
+                print("ERROR: invalid certificate!")
+                pass
+
+            except urllib3.exceptions.LocationParseError:
+                print("ERROR: location parse error!")
+                pass
+
+            except requests.exceptions.ConnectionError:
+                print("ERROR: connection error!")
+                pass
+
+            except requests.exceptions.ConnectTimeout:
+                print("ERROR: connect timeout!")
+                pass
+
+            except requests.exceptions.InvalidSchema:
+                print("ERROR: invalid schema!")
+                pass
+
+            except requests.exceptions.InvalidURL:
+                print("ERROR: invalid url!")
+                pass
+
+            except requests.exceptions.MissingSchema:
+                print("ERROR: missing schema!")
+                pass
+
+            except requests.exceptions.TooManyRedirects:
+                print("ERROR: too many redirects!")
+                pass
+
+            except requests.exceptions.ReadTimeout:
+                print("ERROR: read timeout!")
+                pass
+
+            except UnicodeError:
+                pass
+                
+            try:
+                print("checking: " + links + mal_script)
+                
+                result = web_session.get(links + mal_script, verify = True, headers = user_agent, timeout = (5, 30))
+
+                if mal_script in result.text:
+                    print("True: " + links  + mal_script + " (script in url)")
+                    my_list.append(links  + mal_script + " (script in url)")
+
+            except requests.exceptions.SSLError:
+                print("ERROR: invalid certificate!")
+                pass
+
+            except urllib3.exceptions.LocationParseError:
+                print("ERROR: location parse error!")
+                pass
+
+            except requests.exceptions.ConnectionError:
+                print("ERROR: connection error!")
+                pass
+
+            except requests.exceptions.ConnectTimeout:
+                print("ERROR: connect timeout!")
+                pass
+
+            except requests.exceptions.InvalidSchema:
+                print("ERROR: invalid schema!")
+                pass
+
+            except requests.exceptions.InvalidURL:
+                print("ERROR: invalid url!")
+                pass
+
+            except requests.exceptions.MissingSchema:
+                print("ERROR: missing schema!")
+                pass
+
+            except requests.exceptions.TooManyRedirects:
+                print("ERROR: too many redirects!")
+                pass
+
+            except requests.exceptions.ReadTimeout:
+                print("ERROR: read timeout!")
+                pass
+
+            except UnicodeError:
+                pass
+
+            try:
+                print("checking for forms on: " + links)
+
+                result = web_session.get(links, verify = True, headers = user_agent, timeout = (5, 30))
+
+                try:
+                    soup = BeautifulSoup(result.text, "html.parser")
+                    get_input = soup.find_all("input")
+
+                except:
+                    pass
+
+                form_list = []
+
+                for i in get_input:
+                    if "email" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "hidden" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+                        
+                    if "number" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "password" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "query" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "search" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "search" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "tel" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "text" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                    if "url" in str(i):
+                        form_name = ""
+
+                        try:
+                            parse_name_start = str(i).index("name=\"")
+                            parse_name_end = str(i).index("\"", parse_name_start + 6, len(str(i)))
+                            
+                            for ii in range(parse_name_start + 6, parse_name_end):
+                                form_name = form_name + str(i)[ii]
+
+                            form_list.append(form_name)
+
+                        except:
+                            pass
+
+                form_list = list(dict.fromkeys(form_list))
+                form_list.sort()
+
+                for forms in form_list:
+                    print("checking form: " + forms)
+                    mal_dict = {forms: mal_script}
+
+                    get_data = web_session.get(links, params = mal_dict, verify = True, headers = user_agent, timeout = (5, 30))
+                    send_data = web_session.post(links, data = mal_dict, verify = True, headers = user_agent, timeout = (5, 30))
+
+                    if mal_script in send_data.text or mal_script in get_data.text:
+                        print("true: " + links + " form: " + forms)
+                        my_list.append(links + " form: " + forms)
+
+            except requests.exceptions.SSLError:
+                print("ERROR: invalid certificate!")
+                pass
+
+            except urllib3.exceptions.LocationParseError:
+                print("ERROR: location parse error!")
+                pass
+
+            except requests.exceptions.ConnectionError:
+                print("ERROR: connection error!")
+                pass
+
+            except requests.exceptions.ConnectTimeout:
+                print("ERROR: connect timeout!")
+                pass
+
+            except requests.exceptions.InvalidSchema:
+                print("ERROR: invalid schema!")
+                pass
+
+            except requests.exceptions.InvalidURL:
+                print("ERROR: invalid url!")
+                pass
+
+            except requests.exceptions.MissingSchema:
+                print("ERROR: missing schema!")
+                pass
+
+            except requests.exceptions.TooManyRedirects:
+                print("ERROR: too many redirects!")
+                pass
+
+            except requests.exceptions.ReadTimeout:
+                print("ERROR: read timeout!")
+                pass
+
+            except UnicodeError:
+                pass
+
+    my_list = list(dict.fromkeys(my_list))
+    my_list.sort()
+
+    clear()
+
     return my_list
