@@ -15,13 +15,14 @@ import codecs
 import os
 import re
 import requests
+import time
 import urllib3
 
 #create html sessions object
 web_session = requests.Session()
 
 #fake user agent
-user_agent = {"User-Agent" : "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36"}
+user_agent = {"User-Agent" : "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36", "Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Accept-Language" : "en-US,en"}
 
 #clear console (platform independent)
 def clear():
@@ -30,6 +31,17 @@ def clear():
 
     else:
         os.system("clear")
+        
+#extract metadata
+def extract_metadata(image):
+    image = Image.open(image)
+    exifdata = image.getexif()
+
+    for tagid in exifdata:
+        tagname = TAGS.get(tagid, tagid)
+        value = exifdata.get(tagid)
+        clear()
+        print(f"{tagname:25}: {value}")
 
 #scans for hyperlinks using get requests
 def link_scanner(url):
@@ -1252,6 +1264,23 @@ def sql_injection_scanner(url):
     clear()
     
     return my_list
+
+def upgrade():
+    clear()
+
+    #install
+    os.system("pip install bs4")
+    os.system("pip install requests")
+    os.system("pip install selenium")
+    os.system("pip install urllib3")
+    os.system("pip install webdriver-manager")
+
+    #upgrade
+    os.system("pip install bs4 --upgrade")
+    os.system("pip install requests --upgrade")
+    os.system("pip install selenium --upgrade")
+    os.system("pip install urllib3 --upgrade")
+    os.system("pip install webdriver-manager --upgrade")
 
 def xss_scanner(url):
     my_list = []
