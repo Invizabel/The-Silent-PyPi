@@ -15,6 +15,7 @@ import codecs
 import os
 import re
 import requests
+import socket
 import time
 import urllib3
 
@@ -331,6 +332,27 @@ def link_scanner_selenium(url):
 
     return total_web_list
 
+def port_scanner(url):
+    clear()
+    my_list = []
+
+    for port in range(1,65535):
+        print("checking port: " + str(port))
+        sock = socket.socket()
+        sock.settimeout(0.5)
+        result = sock.connect_ex((url, port))
+        sock.close()
+
+        if result == 0:
+            print(True)
+            my_list.append(port)
+
+        else:
+            print(False)
+
+    clear()
+    return my_list
+    
 def source_code_viewer(file, keyword):
     clear()
 
