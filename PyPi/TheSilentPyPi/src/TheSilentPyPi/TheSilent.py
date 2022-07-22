@@ -9,9 +9,11 @@ except:
     pass
 
 from bs4 import BeautifulSoup
+from collections import *
 from os import name
 
 import codecs
+import numpy
 import os
 import re
 import requests
@@ -24,6 +26,126 @@ web_session = requests.Session()
 
 #fake user agent
 user_agent = {"User-Agent" : "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36", "Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Accept-Language" : "en-US,en"}
+
+#machine learning antivirus detect engine
+def av_detect(virus, learn):
+    ml_virus = av_learn(learn)
+    
+    list_files = []
+    ml_list = []
+
+    print("preparing")
+
+    for root, dirs, files in os.walk(virus, topdown = True):
+       for name in files:
+          list_files.append(name)
+
+    list_files.sort()
+
+    counter = 0
+
+    for file in list_files:
+        try:
+            if os.path.getsize(virus + "/" + file) > 0:
+                with open(virus + "/" + file, "rb") as f:
+                    print("checking: " + file)
+                    
+                    for chunk in iter(lambda: f.read(128), b""):
+                        try:
+                            ascii_convert = codecs.decode(chunk, "ascii")
+                        
+                            clean = str(ascii_convert).replace("b", "")
+                            clean = clean.replace("'", "")
+                            clean = clean.replace("\x00", "")
+                            clean = clean.replace("\x11", "")
+
+                            if clean != "":
+                                ml_list.append(clean)
+                                
+                        except:
+                            pass
+
+                ml_list = list(dict.fromkeys(ml_list))
+
+                for string in ml_list:
+                    for i in ml_virus:
+                        if string == i:
+                            counter += 10
+
+                print("chance: " + str(counter) + "%")
+                counter = 0
+                ml_list = []
+
+        except FileNotFoundError:
+            pass
+
+#machine learning antivirus learn engine
+def av_learn(virus_folder):
+    list_files = []
+    counter_array = np.array([])
+    ml_array = np.array([])
+    ml_list = []
+
+    print("preparing")
+
+    for root, dirs, files in os.walk(virus_folder, topdown = True):
+       for name in files:
+          list_files.append(name)
+
+    list_files.sort()
+
+    for file in list_files:
+        try:
+            if os.path.getsize(virus_folder + "/" + file) > 0:
+                with open(virus_folder + "/" + file, "rb") as f:
+                    print("learning from: " + file)
+                    
+                    for chunk in iter(lambda: f.read(128), b""):
+                        try:
+                            ascii_convert = codecs.decode(chunk, "ascii")
+                        
+                            clean = str(ascii_convert).replace("b", "")
+                            clean = clean.replace("'", "")
+                            clean = clean.replace("\x00", "")
+                            clean = clean.replace("\x11", "")
+
+                            if clean != "":
+                                ml_list.append(clean)
+                                
+                        except:
+                            pass
+
+        except FileNotFoundError:
+            pass
+
+    ml_array = np.array(ml_list)
+    counter = str(Counter(ml_array).most_common(10))
+
+    super_clean = counter.replace("[", "")
+    super_clean = super_clean.replace("]", "")
+    super_clean = super_clean.replace("('", "~")
+    super_clean = super_clean.replace(")", "")
+    super_clean = super_clean.replace("',", "`")
+    counter_list = list(super_clean)
+
+    counter_boolean = False
+    my_string = ""
+    super_counter = []
+
+    for i in counter_list:
+        if i == "`":
+            my_string = my_string.replace("~", "")
+            super_counter.append(my_string)
+            my_string = ""
+            counter_boolean = False
+
+        if i == "~":
+            counter_boolean = True
+
+        if counter_boolean == True:
+            my_string += i
+
+    return super_counter
 
 #clear console (platform independent)
 def clear():
@@ -43,6 +165,37 @@ def extract_metadata(image):
         value = exifdata.get(tagid)
         clear()
         print(f"{tagname:25}: {value}")
+
+def hex_viewer(file):
+    clear()
+
+    count = 0
+
+    my_string = ""
+    
+    with open(file, "rb") as f:
+        for chunk in iter(lambda: f.read(2), b""):
+            try:
+                hex_code = codecs.decode(chunk, "hex")
+                clean = str(hex_code).replace("b", "")
+                clean = clean.replace("'", "")
+                clean = clean.replace("\\", "")
+                clean = clean.replace("x", "")
+
+                my_string += clean
+
+                count += 1
+
+                if count == 64:
+                    print(my_string)
+                    
+                    count = 0
+                    my_string = ""
+                    
+            except:
+                pass
+
+    print("\ndone")
 
 #scans for hyperlinks using get requests
 def link_scanner(url, secure = True):
@@ -353,10 +506,8 @@ def port_scanner(url):
     clear()
     return my_list
     
-def source_code_viewer(file, keyword):
+def source_code_viewer(file, keyword = ""):
     clear()
-
-    my_boolean = False
 
     count = 0
     
@@ -364,17 +515,9 @@ def source_code_viewer(file, keyword):
         for chunk in iter(lambda: f.read(128), b""):
             try:
                 ascii_convert = codecs.decode(chunk, "ascii")
-            
-                clean = str(ascii_convert).replace("b", "")
-                clean = clean.replace("'", "")
-                clean = clean.replace("\x00", "")
-                clean = clean.replace("\x11", "")
 
-                my_list = list(clean)
-                my_list = list(set(my_list))
-
-                if len(my_list) != 1 and my_list[0] != "\\x00" and keyword in clean:
-                    print(clean)
+                if keyword in ascii_convert:
+                    print(ascii_convert)
 
                     count += 1
 
@@ -1302,15 +1445,9 @@ def sql_injection_scanner(url, secure = True):
 def upgrade():
     clear()
 
-    #install
-    os.system("pip install bs4")
-    os.system("pip install requests")
-    os.system("pip install selenium")
-    os.system("pip install urllib3")
-    os.system("pip install webdriver-manager")
-
     #upgrade
     os.system("pip install bs4 --upgrade")
+    os.system("pip install numpy --upgrade")
     os.system("pip install requests --upgrade")
     os.system("pip install selenium --upgrade")
     os.system("pip install urllib3 --upgrade")
