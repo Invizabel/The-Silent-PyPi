@@ -13,7 +13,7 @@ from collections import *
 from os import name
 
 import codecs
-import numpy
+import numpy as np
 import os
 import re
 import requests
