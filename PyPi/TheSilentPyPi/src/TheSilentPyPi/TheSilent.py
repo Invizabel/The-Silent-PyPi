@@ -29,10 +29,12 @@ user_agent = {"User-Agent" : "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKi
 
 #machine learning antivirus detect engine
 def av_detect(virus, learn):
+    clear()
     ml_virus = av_learn(learn)
     
     list_files = []
     ml_list = []
+    possible = []
 
     print("preparing")
 
@@ -45,42 +47,47 @@ def av_detect(virus, learn):
     counter = 0
 
     for file in list_files:
-        try:
-            if os.path.getsize(virus + "/" + file) > 0:
-                with open(virus + "/" + file, "rb") as f:
-                    print("checking: " + file)
+        if os.path.isfile(virus + "/" + file) and os.path.getsize(virus + "/" + file) > 0:
+            with open(virus + "/" + file, "rb") as f:
+                print("checking: " + file)
+                
+                for chunk in iter(lambda: f.read(128), b""):
+                    try:
+                        ascii_convert = codecs.decode(chunk, "ascii")
                     
-                    for chunk in iter(lambda: f.read(128), b""):
-                        try:
-                            ascii_convert = codecs.decode(chunk, "ascii")
-                        
-                            clean = str(ascii_convert).replace("b", "")
-                            clean = clean.replace("'", "")
-                            clean = clean.replace("\x00", "")
-                            clean = clean.replace("\x11", "")
+                        clean = str(ascii_convert).replace("b", "")
+                        clean = clean.replace("'", "")
+                        clean = clean.replace("\x00", "")
+                        clean = clean.replace("\x11", "")
 
-                            if clean != "":
-                                ml_list.append(clean)
-                                
-                        except:
-                            pass
+                        if clean != "":
+                            ml_list.append(clean)
+                            
+                    except:
+                        pass
 
-                ml_list = list(dict.fromkeys(ml_list))
+            ml_list = list(dict.fromkeys(ml_list))
 
-                for string in ml_list:
-                    for i in ml_virus:
-                        if string == i:
-                            counter += 10
+            for string in ml_list:
+                for i in ml_virus:
+                    if string == i:
+                        counter += 1
 
-                print("chance: " + str(counter) + "%")
-                counter = 0
-                ml_list = []
+            if counter > 0:
+                possible.append(file + ": " + str(counter) + "%")
+                
 
-        except FileNotFoundError:
-            pass
+            print("chance: " + str(counter) + "%")
+            counter = 0
+            ml_list = []
+
+    clear()
+
+    return possible
 
 #machine learning antivirus learn engine
 def av_learn(virus_folder):
+    clear()
     list_files = []
     counter_array = np.array([])
     ml_array = np.array([])
@@ -96,7 +103,7 @@ def av_learn(virus_folder):
 
     for file in list_files:
         try:
-            if os.path.getsize(virus_folder + "/" + file) > 0:
+            if os.path.isfile(virus_folder + "/" + file) and os.path.getsize(virus_folder + "/" + file) > 0:
                 with open(virus_folder + "/" + file, "rb") as f:
                     print("learning from: " + file)
                     
@@ -119,7 +126,7 @@ def av_learn(virus_folder):
             pass
 
     ml_array = np.array(ml_list)
-    counter = str(Counter(ml_array).most_common(10))
+    counter = str(Counter(ml_array).most_common(100))
 
     super_clean = counter.replace("[", "")
     super_clean = super_clean.replace("]", "")
@@ -144,6 +151,8 @@ def av_learn(virus_folder):
 
         if counter_boolean == True:
             my_string += i
+
+    clear()
 
     return super_counter
 
