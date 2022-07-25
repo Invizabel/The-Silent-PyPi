@@ -27,6 +27,17 @@ web_session = requests.Session()
 #fake user agent
 user_agent = {"User-Agent" : "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36", "Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Accept-Language" : "en-US,en"}
 
+#increased security
+requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ":HIGH:!DH:!aNULL"
+
+#increased security
+try:
+    requests.packages.urllib3.contrib.pyopenssl.util.ssl_.DEFAULT_CIPHERS += ":HIGH:!DH:!aNULL"
+
+except AttributeError:
+    pass
+
 #machine learning antivirus detect engine
 def av_detect(virus, learn):
     clear()
@@ -36,54 +47,80 @@ def av_detect(virus, learn):
     ml_list = []
     possible = []
 
+    progress = 0
+    progress_count = 0
+    total_progress = 0
+
     print("preparing")
 
     for root, dirs, files in os.walk(virus, topdown = True):
-       for name in files:
-          list_files.append(name)
+        if len(dirs) > 0:
+            for directory in dirs:
+                for file in files:
+                    progress_count += 1
+                    list_files.append(root + directory + "/" + file)
+
+        else:
+            for file in files:
+                progress_count += 1
+                list_files.append(root + "/" + file)
 
     list_files.sort()
 
     counter = 0
 
+    clear()
+    
+    print("progress: " + str(total_progress) + "%")
+
     for file in list_files:
-        if os.path.isfile(virus + "/" + file) and os.path.getsize(virus + "/" + file) > 0:
-            with open(virus + "/" + file, "rb") as f:
-                print("checking: " + file)
-                
-                for chunk in iter(lambda: f.read(128), b""):
-                    try:
-                        ascii_convert = codecs.decode(chunk, "ascii")
+        progress += 1
+
+        if progress == int(progress_count / 100):
+            progress = 0
+            total_progress += 1
+            print("progress: " + str(total_progress) + "%")
+        
+        try:
+            if os.path.isfile(file) and os.path.getsize(file) > 0:
+                with open(file, "rb") as f:
                     
-                        clean = str(ascii_convert).replace("b", "")
-                        clean = clean.replace("'", "")
-                        clean = clean.replace("\x00", "")
-                        clean = clean.replace("\x11", "")
+                    for chunk in iter(lambda: f.read(128), b""):
+                        try:
+                            ascii_convert = codecs.decode(chunk, "ascii")
+                        
+                            clean = str(ascii_convert).replace("b", "")
+                            clean = clean.replace("'", "")
+                            clean = clean.replace("\x00", "")
+                            clean = clean.replace("\x11", "")
 
-                        if clean != "":
-                            ml_list.append(clean)
-                            
-                    except:
-                        pass
+                            if clean != "":
+                                ml_list.append(clean)
+                                
+                        except:
+                            pass
 
-            ml_list = list(dict.fromkeys(ml_list))
+                ml_list = list(dict.fromkeys(ml_list))
 
-            for string in ml_list:
-                for i in ml_virus:
-                    if string == i:
-                        counter += 1
+                for string in ml_list:
+                    for i in ml_virus:
+                        if string == i:
+                            counter += 10
 
-            if counter > 0:
-                possible.append(file + ": " + str(counter) + "%")
-                
+                if counter > 0:
+                    possible.append(file + ": " + str(counter) + "%")
+                    
+                counter = 0
+                ml_list = []
 
-            print("chance: " + str(counter) + "%")
-            counter = 0
-            ml_list = []
+        except:
+            pass
 
     clear()
-
-    return possible
+    possible.sort()
+    
+    for i in possible:
+        print(i)
 
 #machine learning antivirus learn engine
 def av_learn(virus_folder):
@@ -126,7 +163,7 @@ def av_learn(virus_folder):
             pass
 
     ml_array = np.array(ml_list)
-    counter = str(Counter(ml_array).most_common(100))
+    counter = str(Counter(ml_array).most_common(10))
 
     super_clean = counter.replace("[", "")
     super_clean = super_clean.replace("]", "")
@@ -514,7 +551,168 @@ def port_scanner(url):
 
     clear()
     return my_list
+
+def search_engine_email(url, secure = True):
+    if secure == True:
+        secure = "https://"
+
+    if secure == False:
+        secure = "http://"
     
+    counter = 0
+    email_list = []
+    web_list = []
+
+    web_list.append(secure + url)
+
+    clear()
+    
+    while True:
+        try:
+            done = web_list[counter]
+
+        except IndexError:
+            break
+        
+        try:
+            my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
+
+        except:
+            pass
+
+        counter += 1
+
+        website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+        website = list(dict.fromkeys(website))
+        email = re.findall("[a-z0-9]+@[a-z0-9]+[.][a-z]+", my_request)
+        email = list(dict.fromkeys(email))
+
+        for i in website:
+            clean = i.replace('"', " ")
+            clean = clean.replace("'", " ")
+            clean = clean.replace(";", " ")
+            clean = clean.split()
+
+            if "http" not in i:
+                web_list.append(secure + clean[0])
+
+            else:
+                web_list.append(clean[0])
+
+        for i in email:
+            email_list.append(i)
+            email_list = list(dict.fromkeys(email_list))
+
+    clear()
+
+    return email_list
+
+def search_engine_string(url, string, secure = True):
+    if secure == True:
+        secure = "https://"
+
+    if secure == False:
+        secure = "http://"
+
+    counter = 0
+
+    string_list = []
+    web_list = []
+
+    web_list.append(secure + url)
+
+    clear()
+
+    while True:
+        try:
+            done = web_list[counter]
+
+        except IndexError:
+            break
+        
+        try:
+            my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
+
+            if string in my_request:
+                print(web_list[counter])
+                string_list.append(web_list[counter])
+
+        except:
+            pass
+
+        counter += 1
+
+        website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+        website = list(dict.fromkeys(website))
+
+        for i in website:
+            clean = i.replace('"', " ")
+            clean = clean.replace("'", " ")
+            clean = clean.replace(";", " ")
+            clean = clean.split()
+
+            if "http" not in i:
+                web_list.append(secure + clean[0])
+
+            else:
+                web_list.append(clean[0])
+
+            web_list = list(dict.fromkeys(web_list))
+
+    clear()
+
+    return web_list
+
+def search_engine_website(url, secure = True):
+    if secure == True:
+        secure = "https://"
+
+    if secure == False:
+        secure = "http://"
+    
+    counter = 0
+    web_list = []
+
+    web_list.append(secure + url)
+
+    clear()
+
+    while True:
+        try:
+            print(web_list[counter])
+
+        except IndexError:
+            break
+        
+        try:
+            my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
+
+        except:
+            print("ERROR!")
+
+        counter += 1
+
+        website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+        website = list(dict.fromkeys(website))
+
+        for i in website:
+            clean = i.replace('"', " ")
+            clean = clean.replace("'", " ")
+            clean = clean.replace(";", " ")
+            clean = clean.split()
+
+            if "http" not in i:
+                web_list.append(secure + clean[0])
+
+            else:
+                web_list.append(clean[0])
+
+            web_list = list(dict.fromkeys(web_list))
+
+    clear()
+
+    return web_list
+
 def source_code_viewer(file, keyword = ""):
     clear()
 
@@ -854,7 +1052,7 @@ def sql_injection_scanner(url, secure = True):
             pass
 
     if user_input == "2":
-        my_result = link_scanner(url, secure = secure)
+        my_result = search_engine_website(url, secure = secure)
 
         for j in my_result:
             for c in mal_sql:
@@ -1781,7 +1979,7 @@ def xss_scanner(url, secure = True):
             pass
 
     if user_input == "2":
-        my_result = link_scanner(url, secure = secure) 
+        my_result = search_engine_website(url, secure = secure) 
 
         for links in my_result:
             try:
