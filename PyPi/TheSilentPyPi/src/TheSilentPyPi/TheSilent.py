@@ -603,6 +603,8 @@ def search_engine_email(url, secure = True):
             email_list.append(i)
             email_list = list(dict.fromkeys(email_list))
 
+        web_list = list(dict.fromkeys(web_list))
+
     clear()
 
     return email_list
@@ -657,7 +659,7 @@ def search_engine_string(url, string, secure = True):
             else:
                 web_list.append(clean[0])
 
-            web_list = list(dict.fromkeys(web_list))
+        web_list = list(dict.fromkeys(web_list))
 
     clear()
 
@@ -707,7 +709,7 @@ def search_engine_website(url, secure = True):
             else:
                 web_list.append(clean[0])
 
-            web_list = list(dict.fromkeys(web_list))
+        web_list = list(dict.fromkeys(web_list))
 
     clear()
 
