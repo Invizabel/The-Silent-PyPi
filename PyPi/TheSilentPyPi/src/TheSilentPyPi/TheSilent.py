@@ -350,9 +350,9 @@ def search_engine_email(url, secure = True):
             except:
                 pass
 
+            counter += 1
+            
             if len(my_request) <= 1000000:
-                counter += 1
-
                 website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
                 website = list(dict.fromkeys(website))
                 email = re.findall("[a-z0-9]+@[a-z0-9]+[.][a-z]+", my_request)
@@ -391,9 +391,9 @@ def search_engine_email(url, secure = True):
             except:
                 pass
 
-            if len(my_request) <= 1000000:
-                counter += 1
+            counter += 1
 
+            if len(my_request) <= 1000000:
                 website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
                 website = list(dict.fromkeys(website))
                 email = re.findall("[a-z0-9]+@[a-z0-9]+[.][a-z]+", my_request)
@@ -459,9 +459,9 @@ def search_engine_string(url, string, secure = True):
             except:
                 pass
 
-            if len(my_request) <= 1000000:
-                counter += 1
+            counter += 1
 
+            if len(my_request) <= 1000000:
                 website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
                 website = list(dict.fromkeys(website))
 
@@ -498,9 +498,9 @@ def search_engine_string(url, string, secure = True):
             except:
                 pass
 
-            if len(my_request) <= 1000000:
-                counter += 1
+            counter += 1
 
+            if len(my_request) <= 1000000:
                 website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
                 website = list(dict.fromkeys(website))
 
@@ -554,9 +554,9 @@ def search_engine_website(url, secure = True):
             except:
                 print("ERROR!")
 
-            if len(my_request) <= 1000000:
-                counter += 1
+            counter += 1
 
+            if len(my_request) <= 1000000:
                 website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
                 website = list(dict.fromkeys(website))
 
@@ -589,9 +589,9 @@ def search_engine_website(url, secure = True):
             except:
                 print("ERROR!")
 
-            if len(my_request) <= 1000000:
-                counter += 1
+            counter += 1
 
+            if len(my_request) <= 1000000:
                 website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
                 website = list(dict.fromkeys(website))
 
