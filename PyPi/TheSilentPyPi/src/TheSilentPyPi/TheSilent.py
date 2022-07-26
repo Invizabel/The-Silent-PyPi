@@ -558,6 +558,10 @@ def search_engine_email(url, secure = True):
 
     if secure == False:
         secure = "http://"
+
+    clear()
+    user_input = input("1 = scan all | 2 = scan domain\n")
+    clear()
     
     counter = 0
     email_list = []
@@ -566,44 +570,87 @@ def search_engine_email(url, secure = True):
     web_list.append(secure + url)
 
     clear()
-    
-    while True:
-        try:
-            done = web_list[counter]
 
-        except IndexError:
-            break
-        
-        try:
-            my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
+    if user_input == "1":
+        while True:
+            try:
+                done = web_list[counter]
 
-        except:
-            pass
+            except IndexError:
+                break
+            
+            try:
+                my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
 
-        counter += 1
+            except:
+                pass
 
-        website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
-        website = list(dict.fromkeys(website))
-        email = re.findall("[a-z0-9]+@[a-z0-9]+[.][a-z]+", my_request)
-        email = list(dict.fromkeys(email))
+            counter += 1
 
-        for i in website:
-            clean = i.replace('"', " ")
-            clean = clean.replace("'", " ")
-            clean = clean.replace(";", " ")
-            clean = clean.split()
+            website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+            website = list(dict.fromkeys(website))
+            email = re.findall("[a-z0-9]+@[a-z0-9]+[.][a-z]+", my_request)
+            email = list(dict.fromkeys(email))
 
-            if "http" not in i:
-                web_list.append(secure + clean[0])
+            for i in website:
+                clean = i.replace('"', " ")
+                clean = clean.replace("'", " ")
+                clean = clean.replace(";", " ")
+                clean = clean.replace("\\", "")
+                clean = clean.split()
 
-            else:
-                web_list.append(clean[0])
+                if "http" not in i:
+                    web_list.append(secure + clean[0])
 
-        for i in email:
-            email_list.append(i)
-            email_list = list(dict.fromkeys(email_list))
+                else:
+                    web_list.append(clean[0])
 
-        web_list = list(dict.fromkeys(web_list))
+            for i in email:
+                email_list.append(i)
+                email_list = list(dict.fromkeys(email_list))
+
+            web_list = list(dict.fromkeys(web_list))
+
+    if user_input == "2":
+         while True:
+            try:
+                done = web_list[counter]
+
+            except IndexError:
+                break
+            
+            try:
+                my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
+
+            except:
+                pass
+
+            counter += 1
+
+            website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+            website = list(dict.fromkeys(website))
+            email = re.findall("[a-z0-9]+@[a-z0-9]+[.][a-z]+", my_request)
+            email = list(dict.fromkeys(email))
+
+            for i in website:
+                clean = i.replace('"', " ")
+                clean = clean.replace("'", " ")
+                clean = clean.replace(";", " ")
+                clean = clean.replace("\\", "")
+                clean = clean.split()
+
+                if "http" not in i:
+                    web_list.append(secure + clean[0])
+
+                else:
+                    web_list.append(clean[0])
+
+            for i in email:
+                if url in i:
+                    email_list.append(i)
+                    email_list = list(dict.fromkeys(email_list))
+
+            web_list = list(dict.fromkeys(web_list))
 
     clear()
 
@@ -616,6 +663,10 @@ def search_engine_string(url, string, secure = True):
     if secure == False:
         secure = "http://"
 
+    clear()
+    user_input = input("1 = scan all | 2 = scan domain\n")
+    clear()
+
     counter = 0
 
     string_list = []
@@ -623,43 +674,82 @@ def search_engine_string(url, string, secure = True):
 
     web_list.append(secure + url)
 
-    clear()
+    if user_input == "1":
+        while True:
+            try:
+                done = web_list[counter]
 
-    while True:
-        try:
-            done = web_list[counter]
+            except IndexError:
+                break
+            
+            try:
+                my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
 
-        except IndexError:
-            break
-        
-        try:
-            my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
+                if string in my_request:
+                    print(web_list[counter])
+                    string_list.append(web_list[counter])
 
-            if string in my_request:
-                print(web_list[counter])
-                string_list.append(web_list[counter])
+            except:
+                pass
 
-        except:
-            pass
+            counter += 1
 
-        counter += 1
+            website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+            website = list(dict.fromkeys(website))
 
-        website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
-        website = list(dict.fromkeys(website))
+            for i in website:
+                clean = i.replace('"', " ")
+                clean = clean.replace("'", " ")
+                clean = clean.replace(";", " ")
+                clean = clean.replace("\\", "")
+                clean = clean.split()
 
-        for i in website:
-            clean = i.replace('"', " ")
-            clean = clean.replace("'", " ")
-            clean = clean.replace(";", " ")
-            clean = clean.split()
+                if "http" not in i:
+                    web_list.append(secure + clean[0])
 
-            if "http" not in i:
-                web_list.append(secure + clean[0])
+                else:
+                    web_list.append(clean[0])
 
-            else:
-                web_list.append(clean[0])
+            web_list = list(dict.fromkeys(web_list))
 
-        web_list = list(dict.fromkeys(web_list))
+    if user_input == "2":
+        while True:
+            try:
+                done = web_list[counter]
+
+            except IndexError:
+                break
+            
+            try:
+                my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
+
+                if string in my_request:
+                    print(web_list[counter])
+                    string_list.append(web_list[counter])
+
+            except:
+                pass
+
+            counter += 1
+
+            website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+            website = list(dict.fromkeys(website))
+
+            for i in website:
+                if i in url:
+                    clean = i.replace('"', " ")
+                    clean = clean.replace("'", " ")
+                    clean = clean.replace(";", " ")
+                    clean = clean.replace("\\", "")
+                    clean = clean.split()
+
+                    if "http" not in i:
+                        web_list.append(secure + clean[0])
+
+                    else:
+                        web_list.append(clean[0])
+
+            web_list = list(dict.fromkeys(web_list))
 
     clear()
 
@@ -671,45 +761,85 @@ def search_engine_website(url, secure = True):
 
     if secure == False:
         secure = "http://"
+
+    clear()
+    user_input = input("1 = scan all | 2 = scan domain\n")
+    clear()
     
     counter = 0
     web_list = []
 
     web_list.append(secure + url)
 
-    clear()
+    if user_input == "1":
+        while True:
+            try:
+                print(web_list[counter])
 
-    while True:
-        try:
-            print(web_list[counter])
+            except IndexError:
+                break
+            
+            try:
+                my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
 
-        except IndexError:
-            break
+            except:
+                print("ERROR!")
+
+            counter += 1
+
+            website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+            website = list(dict.fromkeys(website))
+
+            for i in website:
+                clean = i.replace('"', " ")
+                clean = clean.replace("'", " ")
+                clean = clean.replace(";", " ")
+                clean = clean.replace("\\", "")
+                clean = clean.split()
+
+                if "http" not in i:
+                    web_list.append(secure + clean[0])
+
+                else:
+                    web_list.append(clean[0])
+
+            web_list = list(dict.fromkeys(web_list))
+
+    if user_input == "2":
+        while True:
+            try:
+                print(web_list[counter])
+
+            except IndexError:
+                break
+            
+            try:
+                my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
+
+            except:
+                print("ERROR!")
+
+            counter += 1
+
+            website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
+            website = list(dict.fromkeys(website))
+
+            for i in website:
+                if url in i:
+                    clean = i.replace('"', " ")
+                    clean = clean.replace("'", " ")
+                    clean = clean.replace(";", " ")
+                    clean = clean.replace("\\", "")
+                    clean = clean.split()
+
+                    if "http" not in i:
+                        web_list.append(secure + clean[0])
+
+                    else:
+                        web_list.append(clean[0])
+
+            web_list = list(dict.fromkeys(web_list))
         
-        try:
-            my_request = web_session.get(web_list[counter], headers = user_agent, timeout = (5,30)).text
-
-        except:
-            print("ERROR!")
-
-        counter += 1
-
-        website = re.findall("[^\"\'=]https://|http://|www\S+[$;\"\']", my_request)
-        website = list(dict.fromkeys(website))
-
-        for i in website:
-            clean = i.replace('"', " ")
-            clean = clean.replace("'", " ")
-            clean = clean.replace(";", " ")
-            clean = clean.split()
-
-            if "http" not in i:
-                web_list.append(secure + clean[0])
-
-            else:
-                web_list.append(clean[0])
-
-        web_list = list(dict.fromkeys(web_list))
 
     clear()
 
