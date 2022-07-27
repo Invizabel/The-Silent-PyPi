@@ -412,6 +412,25 @@ def search_engine_email(url, secure = True):
                     else:
                         web_list.append(clean[0])
 
+                href = re.findall("href=\S+", my_request)
+                href = list(dict.fromkeys(href))
+
+                for i in href:
+                    if url in i:
+                        clean = i.replace('"', "")
+                        clean = clean.replace("'", "")
+                        clean = clean.replace(";", " ")
+                        clean = clean.replace("\\", "")
+                        clean = clean.replace(">", " ")
+                        clean = clean.replace("href=", "")
+                        clean = clean.split()
+
+                        if "http" not in i:
+                            web_list.append(secure + url + clean[0])
+
+                        else:
+                            web_list.append(clean[0])
+
                 for i in email:
                     if url in i:
                         email_list.append(i)
@@ -518,6 +537,25 @@ def search_engine_string(url, string, secure = True):
                         else:
                             web_list.append(clean[0])
 
+                href = re.findall("href=\S+", my_request)
+                href = list(dict.fromkeys(href))
+
+                for i in href:
+                    if url in i:
+                        clean = i.replace('"', "")
+                        clean = clean.replace("'", "")
+                        clean = clean.replace(";", " ")
+                        clean = clean.replace("\\", "")
+                        clean = clean.replace(">", " ")
+                        clean = clean.replace("href=", "")
+                        clean = clean.split()
+
+                        if "http" not in i:
+                            web_list.append(secure + url + clean[0])
+
+                        else:
+                            web_list.append(clean[0])
+
                 web_list = list(dict.fromkeys(web_list))
 
     clear()
@@ -605,6 +643,25 @@ def search_engine_website(url, secure = True):
 
                         if "http" not in i:
                             web_list.append(secure + clean[0])
+
+                        else:
+                            web_list.append(clean[0])
+
+                href = re.findall("href=\S+", my_request)
+                href = list(dict.fromkeys(href))
+
+                for i in href:
+                    if url in i:
+                        clean = i.replace('"', "")
+                        clean = clean.replace("'", "")
+                        clean = clean.replace(";", " ")
+                        clean = clean.replace("\\", "")
+                        clean = clean.replace(">", " ")
+                        clean = clean.replace("href=", "")
+                        clean = clean.split()
+
+                        if "http" not in i:
+                            web_list.append(secure + url + clean[0])
 
                         else:
                             web_list.append(clean[0])
