@@ -363,6 +363,7 @@ def search_engine_email(url, secure = True):
                     clean = clean.replace("'", " ")
                     clean = clean.replace(";", " ")
                     clean = clean.replace("\\", "")
+                    clean = clean.replace("%", " ")
                     clean = clean.split()
 
                     if "http" not in i:
@@ -404,6 +405,7 @@ def search_engine_email(url, secure = True):
                     clean = clean.replace("'", " ")
                     clean = clean.replace(";", " ")
                     clean = clean.replace("\\", "")
+                    clean = clean.replace("%", " ")
                     clean = clean.split()
 
                     if "http" not in i:
@@ -423,6 +425,7 @@ def search_engine_email(url, secure = True):
                         clean = clean.replace("\\", "")
                         clean = clean.replace(">", " ")
                         clean = clean.replace("href=", "")
+                        clean = clean.replace("%", " ")
                         clean = clean.split()
 
                         if "http" not in i:
@@ -489,6 +492,7 @@ def search_engine_string(url, string, secure = True):
                     clean = clean.replace("'", " ")
                     clean = clean.replace(";", " ")
                     clean = clean.replace("\\", "")
+                    clean = clean.replace("%", " ")
                     clean = clean.split()
 
                     if "http" not in i:
@@ -529,6 +533,7 @@ def search_engine_string(url, string, secure = True):
                         clean = clean.replace("'", " ")
                         clean = clean.replace(";", " ")
                         clean = clean.replace("\\", "")
+                        clean = clean.replace("%", " ")
                         clean = clean.split()
 
                         if "http" not in i:
@@ -548,6 +553,7 @@ def search_engine_string(url, string, secure = True):
                         clean = clean.replace("\\", "")
                         clean = clean.replace(">", " ")
                         clean = clean.replace("href=", "")
+                        clean = clean.replace("%", " ")
                         clean = clean.split()
 
                         if "http" not in i:
@@ -603,6 +609,7 @@ def search_engine_website(url, secure = True):
                     clean = clean.replace("'", " ")
                     clean = clean.replace(";", " ")
                     clean = clean.replace("\\", "")
+                    clean = clean.replace("%", " ")
                     clean = clean.split()
 
                     if "http" not in i:
@@ -639,6 +646,7 @@ def search_engine_website(url, secure = True):
                         clean = clean.replace("'", " ")
                         clean = clean.replace(";", " ")
                         clean = clean.replace("\\", "")
+                        clean = clean.replace("%", " ")
                         clean = clean.split()
 
                         if "http" not in i:
@@ -658,6 +666,7 @@ def search_engine_website(url, secure = True):
                         clean = clean.replace("\\", "")
                         clean = clean.replace(">", " ")
                         clean = clean.replace("href=", "")
+                        clean = clean.replace("%", " ")
                         clean = clean.split()
 
                         if "http" not in i:
